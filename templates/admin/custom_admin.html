@@ -1,0 +1,233 @@
+<!-- templates/admin/custom_admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Admin Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #b2ebf2);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #00796b;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 4px solid #004d40;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+        }
+
+        nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            margin: 0 20px;
+            color: #00796b;
+            font-weight: bold;
+            transition: color 0.3s;
+            font-size: 1.1em;
+        }
+
+        nav a:hover {
+            color: #004d40;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #00796b;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        th {
+            background-color: #00796b;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+
+        tr:hover {
+            background-color: #e0f7fa;
+        }
+
+        .delete-btn {
+            background-color: #e57373;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .superuser {
+            font-style: italic;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .image-section {
+            margin-top: 40px;
+        }
+
+        .image-section h3 {
+            font-size: 1.8em;
+            color: #00796b;
+        }
+
+        .image-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .image-table th,
+        .image-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        .image-table th {
+            background-color: #00796b;
+            color: white;
+        }
+
+        .image-table tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+
+        .image-table tr:hover {
+            background-color: #e0f7fa;
+        }
+
+        .image-link {
+            text-decoration: none;
+            color: #00796b;
+        }
+
+        .image-link:hover {
+            color: #004d40;
+        }
+
+        .img-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .timestamp {
+            font-size: 0.9em;
+            color: #757575;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌸 Iris Flower Admin Panel 🌸</h1>
+    </header>
+
+    <nav>
+        <a href="{% url 'home' %}">🏠 Home</a>
+        <a href="{% url 'logout' %}">🚪 Logout</a>
+    </nav>
+
+    <div class="container">
+        <h2>Registered Users</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if not user.is_superuser %}
+                        <form action="{% url 'delete_user' user.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button class="delete-btn" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                        </form>
+                    {% else %}
+                        <span class="superuser">(Superuser)</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="container image-section">
+        <h3>Uploaded Images</h3>
+        <table class="image-table">
+            <tr>
+                <th>Image</th>
+                <th>Predicted Class</th>
+                <th>Uploaded By</th>
+                <th>Timestamp</th>
+            </tr>
+            {% for upload in uploads %}
+            <tr>
+                <td>
+                    <img src="{{ upload.image.url }}" alt="Image" class="img-thumbnail">
+                </td>
+                <td>{{ upload.predicted_class }}</td>
+                <td>{{ upload.user.username }}</td>
+                <td class="timestamp">{{ upload.timestamp|date:"d M Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+
+</html>
