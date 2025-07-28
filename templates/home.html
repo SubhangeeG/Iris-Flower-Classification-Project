@@ -1,0 +1,446 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iris Classifier</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-image: url("{% static 'IrisPrediction/Images/irisBG.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        {% comment %} background-position: center; {% endcomment %}
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+        scroll-behavior: smooth;
+        background-size: 100% ;
+
+      }
+      .background-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{% static 'IrisPrediction/Images/irisBG.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: -2;
+      }
+
+      .background-shader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); /* Adjust opacity as needed */
+        z-index: -1;
+      }
+
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: rgba(44, 62, 80, 0.9);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 10;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        box-shadow: 0.5px 0.5px 0.5px gray;
+
+      }
+
+      header h2 {
+        color: Light-grey;
+        font-size: 1.5rem;
+      }
+
+      nav a {
+        color: white;
+        margin-left: 20px;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+        color:red;
+      }
+
+      .hero {
+        padding-top: 100px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        background-color: rgba(28, 28, 28, 0.5);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        color: #eaeaea;
+      }
+
+      .hero input {
+        padding: 12px 24px;
+        background-color:rgb(60, 49, 184);
+        box-shadow:1px 0px 1px 1px #fff;
+        color: white;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+      .hero input:hover {
+          transform: scale(1.1); /* Slight zoom effect */
+          border: 2px solid red;
+          box-shadow: 0 0 10px red;
+          transition: all 0.3s ease;
+        }
+
+      section {
+        padding: 30px 10px;
+        text-align: center;
+      }
+
+      section#about {
+        color: #fff;
+        background-color: black;
+      }
+      section#about h2{
+        background-color: rgba(44, 62, 80, 0.9);
+        height: 80px;
+        width:100%;
+        padding-top:20px;
+        border-radius:8px;
+        box-shadow: 0.5px 0.5px 0.5px gray;
+      }
+      section#about p{
+        background-color: black;
+        padding-top:20px;
+      }
+      section#details {
+        color: #fff;
+        background-color: black;
+      }
+      section#details h2{
+        background-color: rgba(44, 62, 80, 0.9);
+        height: 80px;
+        padding-top:20px;
+        width:100%;
+        border-radius:8px;
+        box-shadow: 0.5px 0.5px 0.5px gray;
+      }
+      section#contact {
+        color: #fff;
+        background-color: black;
+      }
+      section#contact h2{
+        background-color: rgba(44, 62, 80, 0.9);
+        height: 80px;
+        padding-top:20px;
+        width:100%;
+        border-radius:8px;
+        box-shadow: 0.5px 0.5px 0.5px gray;
+      }
+      section h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      section p {
+        max-width: 800px;
+        margin: auto;
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+
+      .details-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 20px;
+      }
+
+      .details-item {
+        padding-top:20px;
+        width: 45%;
+        text-align: left;
+      }
+
+      .details-item img {
+        width: 80%;
+        border-radius: 8px;
+        box-shadow: 0.5px 0.5px 0.5px 1px gray;
+
+
+      }
+
+      .details-item h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .details-item p{
+        padding:20px;
+
+      }
+      footer {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        nav {
+          margin-top: 10px;
+        }
+
+        .details-container {
+          flex-direction: column;
+        }
+
+        .details-item {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-overlay"></div>
+    <div class="background-shader"></div>
+    <!-- Navigation Bar -->
+    <header>
+      <h2>Iris Classifier</h2>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#about">About</a>
+        <a href="#details">Details</a>
+        <a href="#contact">Contact</a>
+        {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="display: inline">
+          {% csrf_token %}
+          <button
+            type="submit"
+            style="
+              background: none;
+              border: none;
+              padding: 0;
+              font: inherit;
+              color: inherit;
+              cursor: pointer;
+              margin-left: 20px;
+              text-decoration: none;
+              font-weight: 500;
+            "
+            class="nav-link"
+          >
+            Logout
+          </button>
+        </form>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="get-started">
+      <h1>Welcome to the Iris Flower Classifier</h1>
+      <p>
+        Classify iris flower species using sepal and petal features with the
+        power of machine learning.
+      </p>
+      <form action="{% url 'predict' %}">
+        <input type="submit" value="Get Started" />
+      </form>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+      <h2>About Us</h2>
+      <p>
+        This web application is designed to accurately classify iris flower
+        species using a machine learning model trained on the widely recognized
+        Iris dataset. The dataset includes measurements of petal and sepal
+        length and width—key features that help differentiate between the three
+        main species of iris: Setosa, Versicolor, and Virginica.
+        <br /><br />
+        Our goal is to demonstrate how machine learning can be applied in a
+        practical and intuitive way, especially for those just beginning their
+        journey into the world of AI. With a clean interface, this project
+        bridges the gap between complex algorithms and real-world applications
+        by offering a smooth user experience and insightful results.
+        <br /><br />
+        Whether you're a student, researcher, or simply curious about data
+        science, this classifier serves as a great learning tool to understand
+        the fundamentals of classification models and how feature-based
+        predictions work.
+      </p>
+    </section>
+
+    <!-- Details Section -->
+    <section id="details">
+      <h2>About the Iris Flower</h2>
+      <div class="details-container">
+        <!-- Sepal and Petal Information -->
+        <div class="details-item">
+          <h3>What is a Sepal and Petal?</h3>
+          <p>
+            - Sepals are the green leaf-like structures that protect the flower
+            bud before it opens. They are typically broader and shorter than
+            petals.
+          </p>
+          <p>
+            - Petals are the colorful parts of the flower that attract
+            pollinators like bees and butterflies. They are usually more
+            delicate and are typically larger than the sepals.
+          </p>
+          <p>
+            The dimensions of the sepal (length and width) and petal (length and
+            width) are key features used to classify the Iris species. By
+            measuring these dimensions, machine learning models can
+            differentiate between species based on the unique patterns of sepal
+            and petal sizes.
+          </p>
+        </div>
+        <br /><br />
+
+        <div class="details-item">
+          <img
+            src="{% static 'IrisPrediction/Images/SepPet.png' %}"
+            alt="Sepal and Petal"
+            height="400px"
+          />
+          <figcaption
+            style="
+              text-align: center;
+              color: #fff;
+              font-style: italic;
+              margin-top: 8px;
+            "
+          >
+            Fig1 – Sepals and Petals
+          </figcaption>
+        </div>
+      </div>
+      <br /><br />
+
+      <div class="details-container">
+        <!-- Iris Species -->
+        <div class="details-item">
+          <h3>Iris Setosa</h3>
+          <p>
+            Iris setosa is known for its shorter petals and sepals. It has
+            broad, dark green leaves and small, round flowers.
+          </p>
+          <img
+            src="{% static 'IrisPrediction/Images/iris-setosa.png' %}"
+            alt="Iris Setosa"
+          />
+          <figcaption
+            style="
+              text-align: center;
+              color: #fff;
+              font-style: italic;
+              margin-top: 8px;
+            "
+          >
+            Fig2 – Iris Setosa
+          </figcaption>
+        </div>
+
+        <div class="details-item">
+          <h3>Iris Versicolor</h3>
+          <p>
+            Iris versicolor has medium-sized flowers with distinct blue-violet
+            petals and a white stripe running through the middle. Its sepal and
+            petal sizes fall between those of setosa and virginica.
+          </p>
+          <img
+            src="{% static 'IrisPrediction/Images/iris-versicolor.png' %}"
+            alt="Iris Versicolor"
+          />
+          <figcaption
+            style="
+              text-align: center;
+              color: #fff;
+              font-style: italic;
+              margin-top: 8px;
+            "
+          >
+            Fig3 – Iris Versicolor
+          </figcaption>
+        </div>
+
+        <div class="details-item">
+          <h3>Iris Virginica</h3>
+          <p>
+            Iris virginica has large petals with deep purple-blue colors and a
+            prominent yellow marking at the base of the petals. It has larger
+            sepal and petal dimensions compared to the other two species.
+          </p>
+          <img
+            src="{% static 'IrisPrediction/Images/iris-virginica.png' %}"
+            alt="Iris Virginica"
+          />
+          <figcaption
+            style="
+              text-align: center;
+              color: #fff;
+              font-style: italic;
+              margin-top: 8px;
+            "
+          >
+            Fig4 – Iris Virginica
+          </figcaption>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>
+        Email us at
+        <a href="mailto:contact@irisclassifier.com"
+          >contact@irisclassifier.com</a
+        >
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Iris Flower Classifier. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
